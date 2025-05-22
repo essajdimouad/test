@@ -27,10 +27,13 @@ class Publication(models.Model):
     contenu = models.TextField()
     image = models.ImageField(upload_to='publications/', blank=True, null=True)
     date_creation = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name='liked_publications', blank=True)
 
     def __str__(self):
         return f"{self.auteur.username} - {self.date_creation.strftime('%Y-%m-%d %H:%M')}"
+
+    @property
+    def total_likes(self):
+        return self.publication_likes.count()
 
 class Commentaire(models.Model):
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name='commentaires')
@@ -42,7 +45,7 @@ class Commentaire(models.Model):
         return f"{self.auteur.username} sur {self.publication.id} : {self.contenu[:20]}"
 
 class Like(models.Model):
-    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name='likes')
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name='publication_likes')
     utilisateur = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
