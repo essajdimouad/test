@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Profil de {{ profile.user.username }}</h2>
+
+<img src="{{ profile.photo.url }}" alt="Photo de profil" width="150" height="150" class="rounded-circle mb-3" />
+
+<p><strong>Bio :</strong> {{ profile.bio }}</p>
+<p><strong>Ville :</strong> {{ profile.ville }}</p>
+<p><strong>Loisirs :</strong> {{ profile.loisirs }}</p>
+<p><strong>Date de naissance :</strong> {{ profile.date_naissance }}</p>
+
+<p><strong>Abonnés :</strong> {{ profile.followers_count }}</p>
+<p><strong>Abonnements :</strong> {{ profile.following_count }}</p>
+
+{% if request.user != profile.user %}
+  <form method="post" action="{% url 'follow_toggle' profile.user.id %}">
+    {% csrf_token %}
+    {% if request.user.profile.is_following(profile) %}
+      <button type="submit" class="btn btn-danger">Ne plus suivre</button>
+    {% else %}
+      <button type="submit" class="btn btn-primary">Suivre</button>
+    {% endif %}
+  </form>
+{% else %}
+  <a href="{% url 'profile_edit' %}" class="btn btn-secondary">Modifier mon profil</a>
+{% endif %}
+
+<h3>Publications de {{ profile.user.username }}</h3>
+<ul class="list-group">
+  {% for pub in profile.user.publications.all %}
+    <li class="list-group-item">
+      <p>{{ pub.contenu }}</p>
+      {% if pub.image %}
+        <img src="{{ pub.image.url }}" alt="Image publication" class="img-fluid" />
+      {% endif %}
+      <small class="text-muted">{{ pub.date_creation }}</small>
+    </li>
+  {% empty %}
+    <li class="list-group-item">Aucune publication.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

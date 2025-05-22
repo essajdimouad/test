@@ -1,0 +1,37 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 700px; margin: 2rem auto;">
+    <h2 class="mb-4">Fil d'actualité</h2>
+
+    <!-- Formulaire pour publier -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Publier</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Affichage des publications -->
+    {% if publications %}
+        {% for pub in publications %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pub.auteur.username }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ pub.date_creation|date:"d M Y H:i" }}</h6>
+                    <p class="card-text">{{ pub.contenu|linebreaksbr }}</p>
+                    {% if pub.image %}
+                        <img src="{{ pub.image.url }}" class="img-fluid rounded mt-2" alt="Image publication">
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Aucune publication pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

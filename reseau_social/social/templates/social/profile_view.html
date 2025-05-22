@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Mon profil</h2>
+
+<div class="profile-container">
+  {% if profile.photo %}
+    <img src="{{ profile.photo.url }}" alt="Photo de profil" style="max-width: 200px; max-height: 200px; border-radius: 50%;">
+  {% else %}
+    <p>Aucune photo de profil.</p>
+  {% endif %}
+
+  <p><strong>Nom d'utilisateur :</strong> {{ profile.user.username }}</p>
+  <p><strong>Nom :</strong> {{ profile.user.first_name }}</p>
+  <p><strong>Prénom :</strong> {{ profile.user.last_name }}</p>
+  <p><strong>Bio :</strong> {{ profile.bio|default:"Aucune bio" }}</p>
+  <p><strong>Ville :</strong> {{ profile.ville|default:"Non renseignée" }}</p>
+  <p><strong>Date de naissance :</strong> {{ profile.date_naissance|date:"d/m/Y"|default:"Non renseignée" }}</p>
+
+  <a href="{% url 'profile_edit' %}" class="btn btn-primary">Modifier mon profil</a>
+</div>
+{% endblock %}

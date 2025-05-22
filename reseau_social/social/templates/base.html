@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Explorer les utilisateurs -->
+  <div class="d-flex justify-content-end mb-4">
+    <a href="{% url 'user_list' %}" class="btn btn-outline-success btn-sm">
+      <i class="bi bi-search"></i> Explorer les utilisateurs
+    </a>
+  </div>
+
+  <!-- Messages flash -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Profil utilisateur -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-primary text-white fw-bold">
+      <i class="bi bi-person-circle me-2"></i>Mon Profil
+    </div>
+    <div class="card-body d-flex align-items-center">
+      {% if profile.photo %}
+        <img src="{{ profile.photo.url }}" alt="Photo de profil"
+             class="rounded-circle me-4 border"
+             style="width:100px; height:100px; object-fit:cover;">
+      {% else %}
+        <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-4"
+             style="width:100px; height:100px;">
+          N/A
+        </div>
+      {% endif %}
+      <div>
+        <h5 class="mb-1">{{ request.user.get_full_name|default:request.user.username }}</h5>
+        <p class="mb-1"><strong>Bio :</strong> {{ profile.bio|default:"Aucune bio" }}</p>
+        <p class="mb-1"><strong>Ville :</strong> {{ profile.ville|default:"Non renseignée" }}</p>
+        <p class="mb-1"><strong>Lieu de naissance :</strong> {{ profile.lieu_naissance|default:"Non renseigné" }}</p>
+        <div class="mt-2">
+          <a href="{% url 'profile_edit' %}" class="btn btn-outline-light btn-sm me-2">✏️ Modifier</a>
+          <a href="{% url 'profile_view' %}" class="btn btn-outline-light btn-sm">👁️ Voir</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nouvelle publication -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white fw-bold">
+      <i class="bi bi-pencil-square me-2"></i>Nouvelle publication
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-send me-1"></i> Publier
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Publications récentes -->
+  <h4 class="mb-3"><i class="bi bi-newspaper me-2"></i>Publications récentes</h4>
+
+  {% for pub in publications %}
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center bg-light">
+        <span><strong>{{ pub.auteur.username }}</strong></span>
+        <small class="text-muted">{{ pub.date_creation|date:"d M Y H:i" }}</small>
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ pub.contenu }}</p>
+        {% if pub.image %}
+          <img src="{{ pub.image.url }}" class="img-fluid rounded border mt-2" alt="Image de publication">
+        {% endif %}
+      </div>
+    </div>
+  {% empty %}
+    <div class="alert alert-warning">
+      Aucune publication pour le moment.
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

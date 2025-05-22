@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-4" style="max-width: 600px;">
+  <h4 class="mb-3">Conversation avec {{ other_user.username }}</h4>
+
+  <div id="chatBox" class="border rounded p-3 mb-3 bg-light" style="height: 60vh; overflow-y: auto;">
+
+    {% for message in messages %}
+      <div class="d-flex mb-3 {% if message.sender == user %}justify-content-end{% else %}justify-content-start{% endif %}">
+        
+        {% if message.sender != user %}
+        <!-- Avatar gauche -->
+        <div class="flex-shrink-0 me-2">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold; font-size: 1.2rem;">
+            {{ message.sender.username|slice:":1"|upper }}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Bulle de message -->
+        <div class="p-3 rounded"
+          style="
+            max-width: 70%;
+            background-color: {% if message.sender == user %}#0d6efd{% else %}#e9ecef{% endif %};
+            color: {% if message.sender == user %}white{% else %}black{% endif %};
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          ">
+          <div style="white-space: pre-wrap;">{{ message.content }}</div>
+          <small class="d-block text-end mt-1 opacity-75" style="font-size: 0.75rem;">
+            {{ message.timestamp|date:"H:i" }}
+          </small>
+        </div>
+
+        {% if message.sender == user %}
+        <!-- Avatar droite -->
+        <div class="flex-shrink-0 ms-2">
+          <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold; font-size: 1.2rem;">
+            {{ message.sender.username|slice:":1"|upper }}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    {% empty %}
+      <p class="text-center text-muted mt-5">Pas encore de messages dans cette conversation.</p>
+    {% endfor %}
+  </div>
+
+  <form method="post" id="chatForm" novalidate>
+    {% csrf_token %}
+    <div class="input-group">
+      <textarea name="content" class="form-control" placeholder="Écrire un message..." rows="2" required></textarea>
+      <button class="btn btn-primary" type="submit">Envoyer</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const chatBox = document.getElementById('chatBox');
+  // Scroll en bas au chargement
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  const chatForm = document.getElementById('chatForm');
+  const textarea = chatForm.querySelector('textarea');
+
+  // Ctrl+Entrée pour envoyer
+  textarea.addEventListener('keydown', function(e) {
+    if(e.ctrlKey && e.key === 'Enter'){
+      e.preventDefault();
+      if(textarea.value.trim() !== ''){
+        chatForm.submit();
+      }
+    }
+  });
+</script>
+{% endblock %}

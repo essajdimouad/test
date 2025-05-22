@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Modifier mon profil</h2>
+
+<div class="card p-4 shadow-sm">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Affichage de la photo actuelle -->
+    {% if user.profile.photo %}
+      <div class="mb-3 text-center">
+        <img src="{{ user.profile.photo.url }}" alt="Photo de profil" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+        <p class="mt-2">Photo actuelle</p>
+      </div>
+    {% endif %}
+
+    <!-- Champs utilisateur -->
+    <h5 class="mb-3">Informations personnelles</h5>
+    {{ user_form.as_p }}
+
+    <!-- Champs profil -->
+    <h5 class="mt-4 mb-3">Profil</h5>
+    {{ profile_form.as_p }}
+
+    <!-- Boutons -->
+    <div class="d-flex justify-content-between mt-4">
+      <button type="submit" class="btn btn-success">💾 Enregistrer</button>
+      <a href="{% url 'home' %}" class="btn btn-secondary">❌ Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
